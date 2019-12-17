@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, ReactNode} from "react";
 import {Button, KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput} from "react-native";
 
 interface RegistrationFormState {
@@ -20,7 +20,7 @@ export default class RegistrationForm extends Component {
         address: null,
     };
 
-    render() {
+    render(): ReactNode {
         return (
             <SafeAreaView>
                 <KeyboardAvoidingView style={styles.container} behavior={'position'}>
