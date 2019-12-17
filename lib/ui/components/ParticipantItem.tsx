@@ -1,18 +1,20 @@
 import React from "react";
-import {View, Text, TouchableOpacity, StyleSheet} from "react-native";
+import {StyleSheet, Text, TouchableOpacity} from "react-native";
 
 import Participant from "../../models/Participant";
 
 
 interface Props {
-    item: Participant
+    item: Participant,
+    onPress: (p: Participant) => void
 }
 
 export default function ParticipantItem(props: Props) {
+    const {item, onPress} = props;
     return (
-        <TouchableOpacity style={styles.container}>
-            <Text style={styles.title}>{props.item.name}</Text>
-            <Text style={styles.caption}>{props.item.locality}</Text>
+        <TouchableOpacity style={styles.container} onPress={() => onPress(item)}>
+            <Text style={styles.title}>{item.name}</Text>
+            <Text style={styles.caption}>{item.locality}</Text>
         </TouchableOpacity>
 
     );

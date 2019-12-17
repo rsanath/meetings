@@ -1,17 +1,16 @@
 import React, {Component, ReactNode} from "react";
 import {Button, KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput} from "react-native";
 
-interface RegistrationFormState {
-    name?: string,
-    age?: number,
-    dob?: Date,
-    locality?: string,
-    guests?: number,
-    address?: string,
+import Participant from "../models/Participant";
+import {NavigationStackProp} from "react-navigation-stack";
+
+
+interface Props {
+    navigation: NavigationStackProp
 }
 
-export default class RegistrationForm extends Component {
-    state: RegistrationFormState = {
+export default class RegistrationForm extends Component<Props, Participant> {
+    state = {
         name: null,
         age: null,
         dob: null,
@@ -72,10 +71,12 @@ export default class RegistrationForm extends Component {
     }
 
     onChange = (key, val) => {
+        // @ts-ignore
         this.setState({[key]: val})
     };
 
     signUp = async () => {
+        this.props.navigation.goBack();
         console.log(this.state);
     };
 }

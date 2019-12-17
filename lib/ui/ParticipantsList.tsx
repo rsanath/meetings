@@ -1,39 +1,62 @@
-import React, {useEffect, useState} from "react";
+import React, {Component} from "react";
 import {FlatList, SafeAreaView, StyleSheet, TextInput} from "react-native";
-import ParticipantItem from "./components/ParticipantItem";
+
 import Participant from "../models/Participant";
+import ParticipantItem from "./components/ParticipantItem";
 import {getParticipants} from "../data/ParticipantRepo";
+import {NavigationStackProp} from "react-navigation-stack";
 
 
-export default function ParticipantsList() {
-    const [participants, setParticipants] = useState([]);
-    const [offset, setOffset] = useState(0);
+interface Props {
+    navigation: NavigationStackProp
+}
 
-    const loadData = async () => {
-        const result = await getParticipants(offset);
-        setParticipants([...participants, ...result]);
-        setOffset(offset + 10);
+interface State {
+    participants: Participant[],
+    offset: number,
+}
+
+export default class ParticipantsList extends Component<Props, State> {
+    state = {
+        participants: [],
+        offset: 0
     };
 
-    useEffect(() => {
-        loadData()
-    }, []);
+    componentWillMount(): void {
+        this.loadData();
+    }
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <TextInput
-                style={styles.searchBar}
-                placeholder='Search'
-                autoCapitalize='none'
-            />
-            <FlatList<Participant>
-                data={participants}
-                renderItem={({item}) => <ParticipantItem item={item}/>}
-                keyExtractor={(item, index) => index.toString()}
-                onEndReached={loadData}
-            />
-        </SafeAreaView>
-    )
+    render() {
+        return (
+            <SafeAreaView style={styles.container}>
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder='Search'
+                    autoCapitalize='none'
+                />
+                <FlatList<Participant>
+                    data={this.state.participants}
+                    renderItem={({item}) => <ParticipantItem item={item} onPress={this.openDetails}/>}
+                    keyExtractor={(item, index) => index.toString()}
+                    onEndReached={this.loadData}
+                />
+            </SafeAreaView>
+        );
+    }
+
+    loadData = async () => {
+        const result = await getParticipants(this.state.offset);
+        this.setState(state => {
+            return {
+                participants: [...state.participants, ...result],
+                offset: state.offset + 10,
+            };
+        });
+    };
+
+    openDetails = (item: Participant) => {
+        this.props.navigation.navigate('Detail', {item});
+    };
 }
 
 const styles = StyleSheet.create({
