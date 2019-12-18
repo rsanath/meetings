@@ -13,6 +13,7 @@ import {
 import Participant from "../models/Participant";
 import ParticipantItem from "./components/ParticipantItem";
 import {searchParticipants} from "../data/ParticipantRepo";
+import {debounce} from "../Util.js";
 
 
 interface Props {
@@ -87,7 +88,7 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
                     placeholder='Search'
                     autoCapitalize='none'
                     autoFocus={true}
-                    onChangeText={this.search}
+                    onChangeText={this.debouncedSearch}
                 />
                 <TouchableOpacity onPress={this.props.close}>
                     <Text>Close️</Text>
@@ -106,6 +107,8 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
             };
         })
     };
+
+    private debouncedSearch = debounce(this.search, 200, false);
 }
 
 const styles = StyleSheet.create({
