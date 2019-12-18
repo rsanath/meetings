@@ -14,7 +14,7 @@ interface Props {
 export default class RegistrationForm extends Component<Props, Participant> {
     static navigationOptions = ({navigation}) => {
         return {
-            title: 'Registration Form',
+            title: 'Register',
             headerLeft: <HamburgerMenu navigation={navigation}/>,
         };
     };

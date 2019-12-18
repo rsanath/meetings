@@ -1,5 +1,14 @@
 import React, {Component} from "react";
-import {FlatList, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {
+    ActivityIndicator,
+    FlatList,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 
 import Participant from "../models/Participant";
 import ParticipantItem from "./components/ParticipantItem";
@@ -12,12 +21,14 @@ interface Props {
 }
 
 interface State {
-    result: Participant[]
+    result: Participant[],
+    searching: boolean
 }
 
 export default class ParticipantSearchScreen extends Component<Props, State> {
     state = {
         result: [],
+        searching: false
     };
 
     render() {
@@ -38,22 +49,32 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
         );
     };
 
-    private renderResult = () => {
-        if (this.state.result.length == 0) {
+    private renderListHeader = () => {
+        if (this.state.searching) {
+            return (
+                <ActivityIndicator style={{padding: 12}}/>
+            );
+        }
+        if (this.state.result.length <= 0) {
             return (
                 <View style={styles.center}>
                     <Text>
                         No Records
                     </Text>
                 </View>
-            )
-        }
 
+            );
+        }
+        return null;
+    };
+
+    private renderResult = () => {
         return (
             <FlatList<Participant>
                 data={this.state.result}
                 renderItem={this.renderItem}
                 keyExtractor={(item, index) => index.toString()}
+                ListHeaderComponent={this.renderListHeader()}
             />
         );
     };
@@ -69,17 +90,19 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
                     onChangeText={this.search}
                 />
                 <TouchableOpacity onPress={this.props.close}>
-                    <Text>✖️</Text>
+                    <Text>Close️</Text>
                 </TouchableOpacity>
             </View>
         );
     };
 
     private search = async (query: string) => {
+        this.setState({searching: true});
         const result = await searchParticipants(query);
         this.setState(state => {
             return {
                 result,
+                searching: false
             };
         })
     };

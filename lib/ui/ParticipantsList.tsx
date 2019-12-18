@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, FlatList, Modal, StyleSheet, TouchableOpacity, View} from "react-native";
+import {FlatList, Modal, StyleSheet,ActivityIndicator, View} from "react-native";
 
 import Participant from "../models/Participant";
 import ParticipantItem from "./components/ParticipantItem";
@@ -17,7 +17,8 @@ interface Props {
 interface State {
     participants: Participant[],
     offset: number,
-    searchModalVisible: boolean
+    searchModalVisible: boolean,
+    loading: boolean
 }
 
 export default class ParticipantsList extends Component<Props, State> {
@@ -33,6 +34,7 @@ export default class ParticipantsList extends Component<Props, State> {
         participants: [],
         offset: 0,
         searchModalVisible: false,
+        loading: false
     };
 
     componentDidMount(): void {
@@ -52,6 +54,7 @@ export default class ParticipantsList extends Component<Props, State> {
                     renderItem={({item}) => <ParticipantItem item={item} onPress={this.openDetails}/>}
                     keyExtractor={(item, index) => index.toString()}
                     onEndReached={this.loadData}
+                    ListFooterComponent={this.renderLoading()}
                 />
                 {this.renderSearchModal()}
             </View>
@@ -73,16 +76,24 @@ export default class ParticipantsList extends Component<Props, State> {
         );
     };
 
+    private renderLoading = () => {
+        return this.state.loading ? (
+            <ActivityIndicator style={{padding: 12}} />
+        ) : null;
+    };
+
     private setSearchModalVisible(visible: boolean) {
         this.setState({searchModalVisible: visible});
     }
 
     private loadData = async () => {
+        this.setState({loading: true});
         const result = await getParticipants(this.state.offset);
         this.setState(state => {
             return {
                 participants: [...state.participants, ...result],
                 offset: state.offset + 10,
+                loading: false
             };
         });
     };
