@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {Button, FlatList, Modal, StyleSheet, View} from "react-native";
+import {Button, FlatList, Modal, StyleSheet, TouchableOpacity, View} from "react-native";
 
 import Participant from "../models/Participant";
 import ParticipantItem from "./components/ParticipantItem";
@@ -7,6 +7,7 @@ import {getParticipants} from "../data/ParticipantRepo";
 import {NavigationStackProp} from "react-navigation-stack";
 import ParticipantSearchScreen from "./ParticipantSearchScreen";
 import HamburgerMenu from "./components/HamburgerMenu";
+import SearchIcon from "./components/SearchIcon";
 
 
 interface Props {
@@ -24,7 +25,7 @@ export default class ParticipantsList extends Component<Props, State> {
         return {
             title: 'Participants',
             headerLeft: <HamburgerMenu navigation={navigation}/>,
-            headerRight: <Button onPress={navigation.getParam('showSearchModal')} title="🔍"/>,
+            headerRight: <SearchIcon onPress={navigation.getParam('showSearchModal')} />,
         };
     };
 
