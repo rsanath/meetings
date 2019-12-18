@@ -1,7 +1,6 @@
 import React from 'react';
-import {Text, Image, StyleSheet} from 'react-native';
+import {Image, TouchableOpacity} from 'react-native';
 import {NavigationDrawerProp} from 'react-navigation-drawer';
-import {TouchableOpacity} from "react-native";
 
 interface Props {
     navigation: NavigationDrawerProp
