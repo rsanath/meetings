@@ -12,11 +12,15 @@ const ParticipantsNavigator = createStackNavigator({
     List: ParticipantsList,
     Detail: ParticipantDetail,
 }, {
-    initialRouteName: 'List'
+    initialRouteName: 'List',
+});
+
+const FormNavigator = createStackNavigator({
+    Form: RegistrationForm
 });
 
 const RootNavigator = createDrawerNavigator({
-    Register: RegistrationForm,
+    Form: FormNavigator,
     Participants: ParticipantsNavigator,
 });
 

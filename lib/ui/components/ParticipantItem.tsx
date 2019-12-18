@@ -23,7 +23,8 @@ export default function ParticipantItem(props: Props) {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#fafafa',
-        paddingHorizontal: 10,
+        paddingLeft: 20,
+        paddingRight: 10,
         paddingVertical: 13,
         marginHorizontal: 10,
         marginVertical: 5,

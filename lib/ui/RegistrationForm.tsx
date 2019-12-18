@@ -1,8 +1,10 @@
 import React, {Component, ReactNode} from "react";
-import {Button, KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput} from "react-native";
+import {Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput} from "react-native";
 
 import Participant from "../models/Participant";
 import {NavigationStackProp} from "react-navigation-stack";
+import HamburgerMenu from "./components/HamburgerMenu";
+import AppButton from "./components/AppButton";
 
 
 interface Props {
@@ -10,6 +12,13 @@ interface Props {
 }
 
 export default class RegistrationForm extends Component<Props, Participant> {
+    static navigationOptions = ({navigation}) => {
+        return {
+            title: 'Registration Form',
+            headerLeft: <HamburgerMenu navigation={navigation}/>,
+        };
+    };
+
     state = {
         name: null,
         age: null,
@@ -61,7 +70,7 @@ export default class RegistrationForm extends Component<Props, Participant> {
                         autoCapitalize="none"
                         onChangeText={val => this.onChange('address', val)}
                     />
-                    <Button
+                    <AppButton
                         title='Sign Up'
                         onPress={this.signUp}
                     />
@@ -76,9 +85,50 @@ export default class RegistrationForm extends Component<Props, Participant> {
     };
 
     signUp = async () => {
-        this.props.navigation.goBack();
-        console.log(this.state);
+        const validationErrors = this.validateForm();
+        if (validationErrors.length > 0) {
+            Alert.alert(
+                'Please Correct The Following Validation Errors',
+                validationErrors.join('\n')
+            );
+        } else {
+            Alert.alert('Registration Successful', 'Thanks for your interest');
+        }
     };
+
+    validateForm = (): string[] => {
+        const {
+            name,
+            age,
+            dob,
+            locality,
+            guests,
+            address
+        } = this.state;
+
+        const errors = [];
+
+        if (!name || name.length < 3) {
+            errors.push('Name should contain at least three characters');
+        }
+        if (!age || age < 16 || age > 80) {
+            errors.push('You should be at least 16 years old');
+        }
+        if (!dob) {
+            errors.push('Date of birth should be a valid date');
+        }
+        if (!locality || locality.length < 3) {
+            errors.push('You can only bring at most two guests');
+        }
+        if (!guests || guests < 0 || guests > 2) {
+            errors.push('You can only bring at most two guests');
+        }
+        if (!address || address.length < 3) {
+            errors.push('Address should contain at least three characters');
+        }
+
+        return errors;
+    }
 }
 
 const styles = StyleSheet.create({
