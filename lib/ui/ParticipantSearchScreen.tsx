@@ -1,24 +1,16 @@
 import React, {Component} from "react";
-import {
-    ActivityIndicator,
-    FlatList,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
-} from "react-native";
+import {ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, TextInput, View} from "react-native";
 
 import Participant from "../models/Participant";
 import ParticipantItem from "./components/ParticipantItem";
 import {searchParticipants} from "../data/ParticipantRepo";
 import {debounce} from "../Util.js";
+import {HeaderBackButton, NavigationStackProp} from "react-navigation-stack";
 
 
 interface Props {
+    navigation: NavigationStackProp,
     onSelectItem: (p: Participant) => void,
-    close: () => void
 }
 
 interface State {
@@ -27,16 +19,33 @@ interface State {
 }
 
 export default class ParticipantSearchScreen extends Component<Props, State> {
+    static navigationOptions = ({navigation}) => {
+        return {
+            headerLeft: <HeaderBackButton onPress={() => navigation.goBack(null)}/>,
+            headerTitle: navigation.getParam('renderSearchBar')
+        };
+    };
+
     state = {
         result: [],
         searching: false
     };
 
+    componentDidMount(): void {
+        this.props.navigation.setParams({
+            renderSearchBar: this.renderSearchBar,
+        });
+    }
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                {this.renderSearchBar()}
-                {this.renderResult()}
+                <FlatList<Participant>
+                    data={this.state.result}
+                    renderItem={this.renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    ListHeaderComponent={this.renderListHeader()}
+                />
             </SafeAreaView>
         );
     }
@@ -45,7 +54,7 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
         return (
             <ParticipantItem
                 item={item}
-                onPress={() => this.props.onSelectItem(item)}
+                onPress={() => this.props.navigation.navigate('Detail', {item})}
             />
         );
     };
@@ -69,31 +78,16 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
         return null;
     };
 
-    private renderResult = () => {
-        return (
-            <FlatList<Participant>
-                data={this.state.result}
-                renderItem={this.renderItem}
-                keyExtractor={(item, index) => index.toString()}
-                ListHeaderComponent={this.renderListHeader()}
-            />
-        );
-    };
 
     private renderSearchBar = () => {
         return (
-            <View style={styles.searchBarContainer}>
-                <TextInput
-                    style={styles.searchBar}
-                    placeholder='Search'
-                    autoCapitalize='none'
-                    autoFocus={true}
-                    onChangeText={this.debouncedSearch}
-                />
-                <TouchableOpacity onPress={this.props.close}>
-                    <Text>Close️</Text>
-                </TouchableOpacity>
-            </View>
+            <TextInput
+                style={styles.searchBar}
+                placeholder='Search'
+                autoCapitalize='none'
+                autoFocus={true}
+                onChangeText={this.debouncedSearch}
+            />
         );
     };
 
@@ -124,12 +118,6 @@ const styles = StyleSheet.create({
     },
     searchBar: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
-        marginVertical: 10,
-        padding: 12,
-        margin: 6,
-        paddingVertical: 12,
-        borderRadius: 6,
         fontWeight: '400',
     },
     searchModal: {

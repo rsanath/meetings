@@ -17,7 +17,6 @@ interface Props {
 interface State {
     participants: Participant[],
     offset: number,
-    searchModalVisible: boolean,
     loading: boolean
 }
 
@@ -26,20 +25,19 @@ export default class ParticipantsList extends Component<Props, State> {
         return {
             title: 'Participants',
             headerLeft: <HamburgerMenu navigation={navigation}/>,
-            headerRight: <SearchIcon onPress={navigation.getParam('showSearchModal')} />,
+            headerRight: <SearchIcon onPress={navigation.getParam('openSearchScreen')} />,
         };
     };
 
     state = {
         participants: [],
         offset: 0,
-        searchModalVisible: false,
         loading: false
     };
 
     componentDidMount(): void {
         const navigationParams = {
-            showSearchModal: () => this.setSearchModalVisible(true)
+            openSearchScreen: () => this.props.navigation.navigate('Search')
         };
         this.props.navigation.setParams(navigationParams);
         this.loadData();
@@ -56,35 +54,15 @@ export default class ParticipantsList extends Component<Props, State> {
                     onEndReached={this.loadData}
                     ListFooterComponent={this.renderLoading()}
                 />
-                {this.renderSearchModal()}
             </View>
         );
     }
-
-    private renderSearchModal = () => {
-        return (
-            <Modal
-                animationType='fade'
-                transparent={false}
-                visible={this.state.searchModalVisible}
-                onRequestClose={() => this.setSearchModalVisible(false)}>
-                <ParticipantSearchScreen
-                    close={() => this.setSearchModalVisible(false)}
-                    onSelectItem={this.openDetails}
-                />
-            </Modal>
-        );
-    };
 
     private renderLoading = () => {
         return this.state.loading ? (
             <ActivityIndicator style={{padding: 12}} />
         ) : null;
     };
-
-    private setSearchModalVisible(visible: boolean) {
-        this.setState({searchModalVisible: visible});
-    }
 
     private loadData = async () => {
         this.setState({loading: true});
