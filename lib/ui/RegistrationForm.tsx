@@ -47,6 +47,7 @@ export default class RegistrationForm extends Component<Props, State> {
                         style={styles.input}
                         placeholder='Name'
                         autoCapitalize='words'
+                        value={this.state.name}
                         onChangeText={val => this.onChange('name', val)}
                     />
                     <TextInput
@@ -54,6 +55,7 @@ export default class RegistrationForm extends Component<Props, State> {
                         placeholder='Age'
                         keyboardType={'number-pad'}
                         autoCapitalize="none"
+                        value={this.state.age}
                         onChangeText={val => this.onChange('age', val)}
                     />
                     <DatePicker
@@ -77,6 +79,7 @@ export default class RegistrationForm extends Component<Props, State> {
                         style={styles.input}
                         placeholder='Locality'
                         autoCapitalize='words'
+                        value={this.state.locality}
                         onChangeText={val => this.onChange('locality', val)}
                     />
                     <TextInput
@@ -84,6 +87,7 @@ export default class RegistrationForm extends Component<Props, State> {
                         placeholder='Number of Guests'
                         keyboardType={'number-pad'}
                         autoCapitalize="none"
+                        value={this.state.guests}
                         onChangeText={val => this.onChange('guests', val)}
                     />
                     <TextInput
@@ -91,6 +95,7 @@ export default class RegistrationForm extends Component<Props, State> {
                         placeholder='Address'
                         maxLength={50}
                         autoCapitalize="none"
+                        value={this.state.address}
                         onChangeText={val => this.onChange('address', val)}
                     />
                     {this.renderSubmitButton()}
@@ -101,7 +106,7 @@ export default class RegistrationForm extends Component<Props, State> {
 
     renderSubmitButton = () => {
         if (this.state.loading) {
-            return <ActivityIndicator style={{margin: 20}} />
+            return <ActivityIndicator style={{margin: 20}}/>
         }
 
         return (
@@ -130,6 +135,14 @@ export default class RegistrationForm extends Component<Props, State> {
             try {
                 await registerParticipant(this.state);
                 Alert.alert('Registration Successful', 'Thanks for your interest');
+                this.setState({
+                    name: null,
+                    age: null,
+                    dob: null,
+                    locality: null,
+                    guests: null,
+                    address: null
+                });
             } catch (e) {
                 Alert.alert('Unable to register', 'Please try later');
             }
