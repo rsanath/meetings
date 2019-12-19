@@ -1,11 +1,10 @@
 import React, {Component} from "react";
-import {FlatList, Modal, StyleSheet,ActivityIndicator, View} from "react-native";
+import {ActivityIndicator, FlatList, StyleSheet, View} from "react-native";
 
 import Participant from "../models/Participant";
 import ParticipantItem from "./components/ParticipantItem";
 import {getParticipants} from "../data/ParticipantRepo";
 import {NavigationStackProp} from "react-navigation-stack";
-import ParticipantSearchScreen from "./ParticipantSearchScreen";
 import HamburgerMenu from "./components/HamburgerMenu";
 import SearchIcon from "./components/SearchIcon";
 
