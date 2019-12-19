@@ -39,6 +39,7 @@ export default class ParticipantsList extends Component<Props, State> {
         const navigationParams = {
             openSearchScreen: () => this.props.navigation.navigate('Search')
         };
+        this.props.navigation.addListener('willFocus', this.loadData);
         this.props.navigation.setParams(navigationParams);
         this.loadData();
     }
@@ -51,7 +52,7 @@ export default class ParticipantsList extends Component<Props, State> {
                     data={this.state.participants}
                     renderItem={({item}) => <ParticipantItem item={item} onPress={this.openDetails}/>}
                     keyExtractor={(item, index) => index.toString()}
-                    onEndReached={this.loadData}
+                    onEndReached={this.loadMoreData}
                     ListFooterComponent={this.renderLoading()}
                 />
             </View>
@@ -65,6 +66,16 @@ export default class ParticipantsList extends Component<Props, State> {
     };
 
     private loadData = async () => {
+        this.setState({loading: true});
+        const result = await getParticipants(0);
+        this.setState({
+            participants: result,
+            offset: 10,
+            loading: false
+        });
+    };
+
+    private loadMoreData = async () => {
         this.setState({loading: true});
         const result = await getParticipants(this.state.offset);
         this.setState(state => {
