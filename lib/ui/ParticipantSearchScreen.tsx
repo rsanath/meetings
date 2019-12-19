@@ -22,7 +22,17 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
     static navigationOptions = ({navigation}) => {
         return {
             headerLeft: <HeaderBackButton onPress={() => navigation.goBack(null)}/>,
-            headerTitle: navigation.getParam('renderSearchBar')
+            headerTitle: () => {
+                return (
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder='Search'
+                        autoCapitalize='none'
+                        autoFocus={true}
+                        onChangeText={navigation.getParam('onSearch')}
+                    />
+                )
+            }
         };
     };
 
@@ -33,7 +43,7 @@ export default class ParticipantSearchScreen extends Component<Props, State> {
 
     componentDidMount(): void {
         this.props.navigation.setParams({
-            renderSearchBar: this.renderSearchBar,
+            onSearch: this.debouncedSearch,
         });
     }
 

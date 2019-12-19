@@ -19,3 +19,8 @@ export async function searchParticipants(query: string): Promise<Participant[]> 
             || p.locality.toLocaleLowerCase().includes(query);
     });
 }
+
+export async function registerParticipant(params: Participant): Promise<void> {
+    await delay(1000);
+    data.unshift(params);
+}

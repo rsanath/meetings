@@ -1,17 +1,27 @@
 import React, {Component, ReactNode} from "react";
-import {Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput} from "react-native";
-
-import Participant from "../models/Participant";
+import {ActivityIndicator, Alert, KeyboardAvoidingView, SafeAreaView, StyleSheet, TextInput} from "react-native";
+import DatePicker from 'react-native-custom-datetimepicker';
 import {NavigationStackProp} from "react-navigation-stack";
 import HamburgerMenu from "./components/HamburgerMenu";
 import AppButton from "./components/AppButton";
+import {registerParticipant} from "../data/ParticipantRepo";
 
 
 interface Props {
     navigation: NavigationStackProp
 }
 
-export default class RegistrationForm extends Component<Props, Participant> {
+interface State {
+    name: string;
+    age: number;
+    dob: Date;
+    locality: string;
+    guests: number;
+    address: string;
+    loading: boolean;
+}
+
+export default class RegistrationForm extends Component<Props, State> {
     static navigationOptions = ({navigation}) => {
         return {
             title: 'Register',
@@ -26,6 +36,7 @@ export default class RegistrationForm extends Component<Props, Participant> {
         locality: null,
         guests: null,
         address: null,
+        loading: false
     };
 
     render(): ReactNode {
@@ -45,10 +56,22 @@ export default class RegistrationForm extends Component<Props, Participant> {
                         autoCapitalize="none"
                         onChangeText={val => this.onChange('age', val)}
                     />
-                    <TextInput
+                    <DatePicker
                         style={styles.input}
-                        placeholder='Date of Birth'
-                        onChangeText={val => this.onChange('dob', val)}
+                        date={this.state.dob}
+                        mode="date"
+                        placeholder="Date of Birth"
+                        format="YYYY-MM-DD"
+                        minDate="1970-01-01"
+                        maxDate="2000-01-01"
+                        confirmBtnText="Confirm"
+                        cancelBtnText="Cancel"
+                        showIcon={false}
+                        customStyles={{
+                            btnTextConfirm: styles.dateAction,
+                            btnTextCancel: styles.dateAction,
+                        }}
+                        onDateChange={dob => this.setState({dob})}
                     />
                     <TextInput
                         style={styles.input}
@@ -70,14 +93,24 @@ export default class RegistrationForm extends Component<Props, Participant> {
                         autoCapitalize="none"
                         onChangeText={val => this.onChange('address', val)}
                     />
-                    <AppButton
-                        title='Sign Up'
-                        onPress={this.signUp}
-                    />
+                    {this.renderSubmitButton()}
                 </KeyboardAvoidingView>
             </SafeAreaView>
         )
     }
+
+    renderSubmitButton = () => {
+        if (this.state.loading) {
+            return <ActivityIndicator style={{margin: 20}} />
+        }
+
+        return (
+            <AppButton
+                title='Sign Up'
+                onPress={this.signUp}
+            />
+        );
+    };
 
     onChange = (key, val) => {
         // @ts-ignore
@@ -85,6 +118,8 @@ export default class RegistrationForm extends Component<Props, Participant> {
     };
 
     signUp = async () => {
+        this.setState({loading: true});
+
         const validationErrors = this.validateForm();
         if (validationErrors.length > 0) {
             Alert.alert(
@@ -92,8 +127,14 @@ export default class RegistrationForm extends Component<Props, Participant> {
                 validationErrors.join('\n')
             );
         } else {
-            Alert.alert('Registration Successful', 'Thanks for your interest');
+            try {
+                await registerParticipant(this.state);
+                Alert.alert('Registration Successful', 'Thanks for your interest');
+            } catch (e) {
+                Alert.alert('Unable to register', 'Please try later');
+            }
         }
+        this.setState({loading: false});
     };
 
     validateForm = (): string[] => {
@@ -139,8 +180,13 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 6,
         fontWeight: '400',
+        borderBottomColor: 'rgba(0,0,0,0)'
     },
     container: {
         padding: 12,
+    },
+    dateAction: {
+        padding: 30,
+        color: '#000000',
     }
 });
